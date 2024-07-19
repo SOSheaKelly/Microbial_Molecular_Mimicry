@@ -1,0 +1,314 @@
+data <- read.delim("C:/Users/.../final_viral_species_results2.txt")
+
+View(data)
+
+
+library(ggplot2)
+
+
+
+
+##########################################
+
+
+######        Colour Palettes       ######
+
+
+##########################################
+
+
+
+
+# Define a color palette for Baltimore classification levels
+Baltimore_Classification = c("dsDNA virus", "dsDNA virus", "dsDNA virus", "dsDNA virus", "ssRNA-RT virus")
+
+
+baltimore_colors <- c(
+  "dsDNA" = "#16686C",   
+  "ssDNA" = "#B450B6",   
+  "(+)ssRNA" = "yellow", 
+  "(-)ssRNA" = "#d62728", 
+  "dsRNA" = "#2ca02c",   
+  "dsDNA-RT" = "#8c564b",
+  "ssRNA-RT" = "#23A6AD"
+  )
+
+##########################################
+
+
+#####     investigate dataset       ######
+
+
+##########################################
+
+
+# Number of different classes
+num_unique_classes <- length(unique(data$Class))
+unique_classes <- unique(data$Class)
+
+# Print the unique classes
+print(unique_classes)
+print(num_unique_classes)
+
+str(data)
+
+
+
+
+
+# Number of different orders
+num_unique_order <- length(unique(data$Order))
+unique_order <- unique(data$Order)
+
+
+# Print the result
+print(num_unique_order)
+print(unique_order)
+
+
+
+
+
+# Number of different families
+num_unique_families <- length(unique(data$Family))
+
+# Print the result
+print(num_unique_families)
+
+
+
+
+
+
+
+colnames(data)[colnames(data) == "Identity"] <- "Identity1"
+
+# Perform the division and create the new 'Identity' column
+data <- data %>%
+  mutate(Identity = Identity1 / Hit.Length * 100)
+
+# View the updated dataset
+View(data)
+
+
+
+
+
+
+
+
+##########################################
+
+
+#####          Family Hits          ######
+
+
+##########################################
+
+
+
+# Create the bar chart using ggplot2 for viral family analysis
+
+
+
+
+family_counts <- table(data$Family)
+family_counts_df <- data.frame(Family = names(family_counts), Hits = as.numeric(family_counts))
+
+top_families <- head(family_counts_df[order(-family_counts_df$Hits), ], 15)
+top_families$Family <- factor(top_families$Family, levels = rev(top_families$Family))
+
+
+View(top_families)
+
+
+
+
+
+# Assign baltimore classification to families
+
+classify_family <- function(family_name) {
+  if (family_name == "Straboviridae" ||
+      family_name == "Poxviridae" ||
+      family_name == "Vilmaviridae" ||
+      family_name == "Mimiviridae" ||
+      family_name == "Orthoherpesviridae" ||
+      family_name == "Pandoravirus Family" ||
+      family_name == "Baculoviridae" ||
+      family_name == "Phycodnaviridae" ||
+      family_name == "Marseilleviridae" ||
+      family_name == "unspecified Caudoviricetes" ||
+      family_name == "Dolichocephalovirinae" ||
+      family_name == "Herelleviridae" ||
+      family_name == "Polydnaviriformidae" ||
+      family_name == "Dolichocephalovirinae" ||
+      family_name == "Eneladusvirus" ||
+      family_name == "Iridoviridae") {
+    return("dsDNA")
+  } else if (family_name == "Retroviridae") {
+    return("ssRNA-RT")
+  } else {
+    return("Unspecified")
+  }
+}
+
+
+#Classify Class
+library(dplyr)
+
+# Define the mapping of Class to Classification
+classification_map <- tribble(
+  ~Class, ~Classification,
+  "Revtraviricetes", "ssRNA-RT",
+  "Pokkesviricetes", "dsDNA",
+  "Discosea", "dsDNA",
+  "Megaviricetes", "dsDNA",
+  "Herviviricetes", "dsDNA",
+  "Polintoviricetes", "dsDNA",
+  "Polydnaviriformidae", "dsDNA",
+  "Unspecified virus", "Unspecified",
+  "unspecified virus", "Unspecified",
+  "dsDNA Virus", "dsDNA Virus",
+  "Malgrandaviricetes", "dsDNA",
+  "Ellioviricetes", "dsDNA",
+  "Prokaryotic dsDNA virus sp.", "dsDNA",
+  "Unspecified DNA Virus", "dsDNA",
+  "Unspecified Caudoviricetes", "dsDNA",
+  "uncultured virus", "Unspecified",
+  "unspecified Riboviria", "Unspecified"
+)
+
+data_with_classification <- data %>%
+  left_join(classification_map, by = "Class")
+
+# Apply the classify_family function to the Family column
+top_families$Classification <- sapply(top_families$Family, classify_family)
+
+# Print the updated top_families data frame to check classifications
+print(top_families)
+
+
+
+# Create the bar chart with ggplot2
+vfam <- ggplot(top_families, aes(x = Family, y = Hits, fill = Classification)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Figure 7A: Bar Chart of Top 15 Viral Families for Human Mimicry", x = "Viral Families", y = "Number of Unique Mimics") +
+  scale_fill_manual(values = baltimore_colors) +
+  theme_gray() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        legend.position = c(0.1, 0.7),  
+        legend.justification = c(0, 0),
+        legend.background = element_rect(fill = "white", size = 2, linetype = "dotted")) +  
+  scale_y_continuous(breaks = seq(0, 900, by = 100), limits = c(0, 900)) + 
+  geom_text(aes(label = Hits), vjust = -0.3, size = 2.75, color = "black")  
+
+# Print the plot
+print(vfam)
+
+
+
+
+
+
+##########################################
+
+
+#####    Viral Species Boxplot       #####
+
+
+##########################################
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Define the mapping of Class to Classification
+classification_map <- tribble(
+  ~Class, ~Classification,
+  "Revtraviricetes", "ssRNA-RT",
+  "Pokkesviricetes", "dsDNA",
+  "Discosea", "dsDNA",
+  "Megaviricetes", "dsDNA",
+  "Herviviricetes", "dsDNA",
+  "Polintoviricetes", "dsDNA",
+  "Polydnaviriformidae", "dsDNA",
+  "Unspecified virus", "Unspecified",
+  "unspecified virus", "Unspecified",
+  "dsDNA Virus", "dsDNA",
+  "Malgrandaviricetes", "dsDNA",
+  "Ellioviricetes", "dsDNA",
+  "Prokaryotic dsDNA virus sp.", "dsDNA",
+  "Unspecified DNA Virus", "dsDNA",
+  "Unspecified Caudoviricetes", "dsDNA",
+  "uncultured virus", "Unspecified",
+  "unspecified Riboviria", "Unspecified",
+  "Caudoviricetes","dsDNA", 
+  "Naldaviricetes", "dsDNA"
+)
+
+# Merge the classification data with the main dataset
+data_with_classification <- data %>%
+  left_join(classification_map, by = c("Class" = "Class"))
+
+# Define Baltimore colors
+baltimore_colors <- c(
+  "dsDNA" = "#16686C",   
+  "ssDNA" = "#B450B6",   
+  "(+)ssRNA" = "yellow", 
+  "(-)ssRNA" = "#d62728", 
+  "dsRNA" = "#2ca02c",   
+  "dsDNA-RT" = "#8c564b",
+  "ssRNA-RT" = "#23A6AD",
+  "Unspecified" = "grey"
+)
+
+
+summary_stats <- data_with_classification %>%
+  group_by(Classification) %>%
+  summarize(
+    top_identity = max(Identity, na.rm = TRUE),
+    median_identity = median(Identity, na.rm = TRUE)
+  )
+
+
+
+
+# Create the boxplots
+p <- ggplot(data_with_classification, aes(x = Classification, y = Identity, fill = Classification)) +
+  geom_boxplot() +
+  scale_fill_manual(values = baltimore_colors) +
+  labs(title = "Figure 7B:Viral Sequence Homology Distribution by Baltimore Classification",
+       x = "Baltimore Classification",
+       y = "Sequence Homology(%)") +
+  theme_grey () +
+  theme(
+    plot.title = element_text(size = 13,face = "bold"),
+    axis.title.x = element_text(size = 14),
+    axis.title.y = element_text(size = 14),
+    axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 12),
+    legend.position = c(0.85, 0.85), # Position legend inside the plot area
+    legend.background = element_rect(fill = alpha('white', 0.7)) # Add a semi-transparent background
+  ) +
+  geom_text(data = summary_stats, aes(x = Classification, y = top_identity, label = paste0("Top: ", round(top_identity, 2))),
+            vjust = -0.5, hjust = 1.1, size = 3, color = "black", fontface = "bold") +
+  geom_text(data = summary_stats, aes(x = Classification, y = median_identity, label = paste0("Median: ", round(median_identity, 2))),
+            vjust = -0.5, hjust = -0.1, size = 3, color = "black", fontface = "bold")
+
+# Print the boxplot
+print(p)
+
+
+
+
+
+
+
+non_matching_rows <- data %>%
+  filter(!Class %in% classification_map$Class)
+
+# Print the new table with non-matching rows
+print(non_matching_rows)
+View(non_matching_rows)

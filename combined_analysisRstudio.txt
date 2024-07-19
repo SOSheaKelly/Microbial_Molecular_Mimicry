@@ -1,0 +1,326 @@
+# Install and load necessary packages
+
+rm( list = ls( ) ) 
+
+# Install and load necessary packages
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("ggrepel")
+
+library(ggplot2)
+library(dplyr)
+library(ggrepel)
+
+# Read in the data files
+
+virus_data <- read.delim("C:/Users/.../filtered_combined_viral_processed_blast.txt")
+bacteria_data <- read.delim("C:/Users/.../bacterial_processed_results.txt")
+fungi_data <- read.delim("C:/Users/....reordered_comp_fungal_processed_results.txt")
+archaea_data <- read.delim("C:/Users/....reordered_comp_archaeal_processed_results.txt")
+
+
+
+convert_to_percentage <- function(df) {
+  df <- df %>%
+    rowwise() %>%
+    mutate(Positives = ifelse(grepl("/", Positives), {
+      fraction <- strsplit(as.character(Positives), "/")[[1]]
+      numerator <- as.numeric(fraction[1])
+      denominator <- as.numeric(fraction[2])
+      (numerator / denominator) * 100
+    }, as.numeric(as.character(Positives))))
+  
+  return(df)
+}
+
+bacteria_data <- convert_to_percentage(bacteria_data)
+
+
+
+View(bacteria_data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###########################################################
+
+
+###                 data handling                      ###
+
+
+###########################################################
+
+# Rename 'Identity' column to 'Identity1' first
+colnames(virus_data)[colnames(virus_data) == "Identity"] <- "Identity1"
+
+# Perform the division and create the new 'Identity' column
+virus_data <- virus_data %>%
+  mutate(Identity = Identity1 / Hit.Length * 100)
+
+# View the updated dataset
+View(virus_data)
+
+
+
+
+# Rename 'Positives' column to 'Pos1' first
+colnames(virus_data)[colnames(virus_data) == "Positives"] <- "Pos1"
+
+# Perform the division and create the new 'Identity' column
+virus_data <- virus_data %>%
+  mutate(Positives = Pos1 / Hit.Length * 100)
+
+# View the updated dataset
+View(virus_data)
+
+
+
+
+convert_to_percentage <- function(df) {
+  df <- df %>%
+    rowwise() %>%
+    mutate(Positives = ifelse(grepl("/", Positives), {
+      fraction <- strsplit(as.character(Positives), "/")[[1]]
+      numerator <- as.numeric(fraction[1])
+      denominator <- as.numeric(fraction[2])
+      (numerator / denominator) * 100
+    }, as.numeric(as.character(Positives))))
+  
+  return(df)
+}
+
+
+
+# Clean and convert Positives column to percentage for each dataset
+bacteria_data <- convert_to_percentage(bacteria_data)
+archaea_data <- convert_to_percentage(archaea_data)
+fungi_data <- convert_to_percentage(fungi_data)
+
+
+
+View(fungi_data)
+
+# Select the specified columns and add Category column
+virus_data_selected <- virus_data %>% select(1, 2, 3, 4, 7, 8, 12, 15, 20, 21) %>% mutate(Category = "Virus")
+bacteria_data_selected <- bacteria_data %>% select(1, 2, 3, 4, 7, 8, 12, 13, 14) %>% mutate(Category = "Bacteria")
+fungi_data_selected <- fungi_data %>% select(1, 2, 3, 4, 7, 8, 12, 13, 14) %>% mutate(Category = "Fungi")
+archaea_data_selected <- archaea_data %>% select(1, 2, 3, 4, 7, 8, 12, 13, 14) %>% mutate(Category = "Archaea")
+
+# Combine all datasets
+combined_data <- bind_rows(virus_data_selected, bacteria_data_selected, fungi_data_selected, archaea_data_selected)
+
+# Convert Identity and Positives columns to numeric (in case they are not)
+combined_data$Identity <- as.numeric(as.character(combined_data$Identity))
+combined_data$Positives <- as.numeric(as.character(combined_data$Positives))
+
+# View combined data (for debugging)
+View(combined_data)
+
+# Function to get top 3 unique data points based on Identity
+get_top_unique <- function(data) {
+  data %>%
+    arrange(desc(Identity)) %>%
+    distinct(Protein.Names, .keep_all = TRUE) %>%
+    slice(1:1)
+}
+
+# Get top 3 unique data points for each category
+top3_data <- combined_data %>%
+  group_by(Category) %>%
+  do(get_top_unique(.))
+
+
+
+
+# Create the scatter plot
+ggplot() +
+  geom_point(data = combined_data %>% filter(Category == "Virus"), aes(x = Identity, y = Positives, color = "Virus")) +
+  geom_point(data = combined_data %>% filter(Category == "Bacteria"), aes(x = Identity, y = Positives, color = "Bacteria")) +
+  geom_point(data = combined_data %>% filter(Category == "Archaea"), aes(x = Identity, y = Positives, color = "Archaea")) +
+  geom_point(data = combined_data %>% filter(Category == "Fungi"), aes(x = Identity, y = Positives, color = "Fungi")) +
+  geom_text_repel(data = top3_data, aes(x = Identity, y = Positives, label = Protein.Names, color = Category), size = 8) +  
+  scale_color_manual(values = c("Virus" = "#8A0000", "Bacteria" = "purple", "Archaea" = "#387051", "Fungi" = "#D09500")) +
+  labs(title = "Figure 8A:Homology of Mimics Across Domains",
+       x = "Identity Percentage",
+       y = "Positives Percentage",
+       color = "Domain") +  
+  guides(color = guide_legend(override.aes = list(shape = 100))) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.background = element_rect(fill = "white"),
+    panel.background = element_rect(fill = "gray90"),
+    legend.background = element_rect(fill = "#23A6AD", color = "white"),  
+    legend.title = element_text(color = "white", face = "bold"),  
+    legend.text = element_text(size = 9, face = "plain", color = "white"), 
+    legend.key = element_rect(color = "gray90")
+  )
+
+
+
+
+
+
+
+
+
+
+# Homology Across domains 
+
+library(ggplot2)
+library(dplyr)
+
+
+# Create a new data frame that combines all datasets with a category column
+combined_data <- bind_rows(
+  mutate(virus_data_selected, Category = "Virus"),
+  mutate(bacteria_data_selected, Category = "Bacteria"),
+  mutate(fungi_data_selected, Category = "Fungi"),
+  mutate(archaea_data_selected, Category = "Archaea")
+)
+
+# Calculate summary statistics for each category
+summary_stats <- combined_data %>%
+  group_by(Category) %>%
+  summarize(
+    top_identity = max(Identity),
+    lower_quartile = quantile(Identity, 0.25),
+    median = median(Identity),
+    upper_quartile = quantile(Identity, 0.75),
+    IQR = IQR(Identity)
+  )
+
+# Create the boxplot
+p <- ggplot(combined_data, aes(x = Category, y = Identity, fill = Category)) +
+  geom_boxplot(width = 0.7) +  # Adjust boxplot width
+  scale_fill_manual(values = c("Virus" = "#8A0000", "Bacteria" = "purple", "Archaea" = "#387051", "Fungi" = "#D09500")) +
+  labs(title = "Figure 8B: Distribution Analysis of Sequence Homology for Each Domain",
+       x = "Domains",
+       y = "Sequence Identity Percentage") +
+  theme_minimal()
+
+# Add labels for each statistic
+label_data <- data.frame(
+  Category = summary_stats$Category,
+  label = c(
+    paste0("Top Identity: ", round(summary_stats$top_identity, 2)),
+    paste0("Lower Quartile: ", round(summary_stats$lower_quartile, 2)),
+    paste0("Median: ", round(summary_stats$median, 2)),
+    paste0("Upper Quartile: ", round(summary_stats$upper_quartile, 2)),
+    paste0("IQR: ", round(summary_stats$IQR, 2))
+  ),
+  y = c(
+    summary_stats$top_identity,
+    summary_stats$lower_quartile,
+    summary_stats$median,
+    summary_stats$upper_quartile,
+    summary_stats$lower_quartile - 0.025 * summary_stats$IQR  # Adjust multiplier for IQR position
+  )
+)
+
+# Adjust position of IQR label and other labels
+p + geom_text(data = label_data, aes(x = Category, y = y, label = label),
+              position = position_dodge(width = 0.75), vjust = 1.5, hjust = -0.1, size = 3, color = "black")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+library(ggplot2)
+library(dplyr)
+
+# Assuming your data is already defined and structured correctly
+# If not, replace this with your actual dataset or read it from a file
+
+# Create a new data frame that combines all datasets with a category column
+combined_data <- bind_rows(
+  mutate(virus_data_selected, Category = "Virus"),
+  mutate(bacteria_data_selected, Category = "Bacteria"),
+  mutate(fungi_data_selected, Category = "Fungi"),
+  mutate(archaea_data_selected, Category = "Archaea")
+)
+
+# Calculate summary statistics for each category
+summary_stats <- combined_data %>%
+  group_by(Category) %>%
+  summarize(
+    top_identity = max(Identity),
+    lower_quartile = quantile(Identity, 0.25),
+    median = median(Identity),
+    upper_quartile = quantile(Identity, 0.75),
+    IQR = IQR(Identity)
+  )
+
+# Create the boxplot
+
+
+library(ggplot2)
+library(dplyr)
+
+combined_data <- bind_rows(
+  mutate(virus_data_selected, Category = "Virus"),
+  mutate(bacteria_data_selected, Category = "Bacteria"),
+  mutate(fungi_data_selected, Category = "Fungi"),
+  mutate(archaea_data_selected, Category = "Archaea")
+)
+
+# Calculate summary statistics for each category
+summary_stats <- combined_data %>%
+  group_by(Category) %>%
+  summarize(
+    top_identity = max(Identity),
+    median = median(Identity)
+  )
+
+# Create the boxplot
+p <- ggplot(combined_data, aes(x = Category, y = Identity, fill = Category)) +
+  geom_boxplot(width = 0.7) +  # Adjust boxplot width
+  scale_fill_manual(values = c("Virus" = "#8A0000", "Bacteria" = "purple", "Archaea" = "#387051", "Fungi" = "#D09500")) +
+  labs(title = "Distribution Analysis of Sequence Homology for Each Domain",
+       x = "Domains",
+       y = "Sequence Identity Percentage") +
+  theme_minimal()
+
+# Create label data with correct positions
+label_data <- data.frame(
+  Category = rep(summary_stats$Category, 2),
+  label = c(
+    paste0("Top Identity: ", round(summary_stats$top_identity, 2)),
+    paste0("Median: ", round(summary_stats$median, 2))
+  ),
+  y = c(
+    summary_stats$top_identity,
+    summary_stats$median
+  )
+)
+
+# Adjusting label positions to ensure they appear next to the correct boxplots
+label_data$Category <- factor(label_data$Category, levels = c("Virus", "Bacteria", "Fungi", "Archaea"))
+
+# Plotting with only median and top identity labels
+p + geom_text(data = label_data, aes(x = Category, y = y, label = label),
+              vjust = -0.5, hjust = -0.1, size = 3, color = "black")

@@ -1,0 +1,987 @@
+data <- read.delim("C:/Users/.../filtered_combined_viral_processed_blast.txt")
+View(data)
+
+protein_data <- ("C:/Users/.../protein.names.txt")
+View(protein_data)
+################
+
+### fix data ###
+
+################
+# Clean invalid UTF-8 characters in the "Protein Names" column
+data$Protein.Names <- iconv(data$Protein.Names, from = "UTF-8", to = "UTF-8", sub = "")
+
+# Replace "Collagen? " with "Collagen" in the "Protein Names" column
+data$Protein.Names <- gsub("Collagen.?.", "Collagen", data$Protein.Names, perl = TRUE)
+
+#Add Protein Name for P42574 (Caspase-3 p17)
+data$Protein.Names[data$Accession.ID == "P42574_1"] <- "Caspase-3"
+
+#fix ERBB4
+data <- data.frame(lapply(data, function(x) gsub("Neuregulins", "Neuregulin (ERBB4)", x)))
+
+
+#fix NF-kB
+data$Protein.Name <- gsub("Nuclear factor kappa B \\(NF-\\?B\\)", "Nuclear factor kappa B (NF-kB)", trimws(data$Protein.Name), fixed = TRUE)
+
+
+
+unique(data$Protein.Name)
+
+
+############################
+
+
+### Ranked by Identity  ### 
+
+
+############################
+
+
+
+
+# Convert Identity to percentage (indentity/sequence length)
+colnames(data)[colnames(data) == "Identity"] <- "Identity1"
+
+# Perform the division and create the new 'Identity' column
+data <- data %>%
+  mutate(Identity = Identity1 / Hit.Length * 100)
+
+# View the updated dataset
+View(data)
+
+
+
+iden_100 <- head(data[order(-data$Identity), ], 100)
+
+# Print the first few rows of iden_100 to verify
+View(iden_100)
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Load library
+library(dplyr)
+
+selected_columns <- data[, c(1, 2,4,7,8, 11, 12, 13, 14,18, 19)]
+
+# Arrange columns
+ranked_identity <- selected_columns %>%
+  arrange(desc(data$Identity))
+
+# View the ranked dataset
+print(ranked_identity)
+
+#write ranked dataset to a new CSV file
+write.csv(ranked_identity, "/Users/iamse/Documents/Outputs", row.names = FALSE)
+View(ranked_identity)
+
+
+
+top_identity <- ranked_identity %>%
+  group_by(Protein.Names) %>%
+  slice(1) %>%
+  ungroup() %>%
+  arrange(desc(Identity))  
+
+# View the resulting data frame
+View(top_identity)
+
+
+print(top_identity)
+View(top_identity)
+
+
+selected_columns <- selected_columns %>%
+  mutate(Identity = as.numeric(data$Identity))
+
+# Now calculate the mean, handling NA values
+mean_identity <- selected_columns %>%
+  group_by(Protein.Names) %>%
+  summarise(mean_identity = mean(Identity, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(mean_identity))
+
+# View the resulting data frame
+View(mean_identity)
+
+
+
+
+
+
+############################
+
+
+### Ranked by Positives  ### 
+
+
+############################
+
+
+selected_columns <- data[, c(1, 2,4,6,7,8, 11, 12, 13, 14,18, 19)]
+
+# Arrange columns
+ranked_positives <- selected_columns %>%
+  arrange(desc(Positives))
+
+# View the ranked dataset
+print(ranked_positives)
+
+# Write ranked dataset to a new CSV file
+write.csv(ranked_positives, "/Users/iamse/Documents/Outputs", row.names = FALSE)
+
+View(ranked_positives)
+
+# Get 1 Example of top proteins only
+top_positives <- ranked_positives %>%
+  group_by(`Protein.Names`) %>%
+  slice(1) %>%
+  ungroup() %>%
+  arrange(desc(Positives))
+
+print(top_positives)
+View(top_positives)
+
+
+
+
+# Print the column names
+colnames(data)
+
+
+
+
+
+
+
+# Calculate the mean Positives for each Protein.Names
+selected_columns <- data[, c("Protein.Names", "Positives")]
+
+# Confirm Column Names
+colnames(selected_columns) <- c("Protein.Names", "Positives")
+
+# Calculate the mean 
+mean_positives <- selected_columns %>%
+  group_by(Protein.Names) %>%
+  summarise(mean_positives = mean(Positives, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(mean_positives))
+
+# View the resulting table
+print(mean_positives)
+View(mean_positives)
+
+
+
+
+############################
+
+
+###    Ranked by Gaps   ### 
+
+
+############################
+
+
+# Load library
+library(dplyr)
+
+selected_columns <- data[, c(1,2,3,5,6,7,15)]
+
+# Arrange columns
+ranked_gaps <- selected_columns %>%
+  arrange(Gaps)
+
+# View the ranked dataset
+print(ranked_gaps)
+
+# If you want to write the ranked dataset to a new CSV file
+write.csv(ranked_gaps, "/Users/iamse/Documents/Outputs", row.names = FALSE)
+
+View(ranked_gaps)
+
+# Get 1 Example of top proteins only
+top_gaps <- ranked_gaps %>%
+  group_by(`Protein.Names`) %>%
+  slice(1) %>%
+  ungroup() %>%
+  arrange(Gaps)
+
+print(top_gaps)
+View(top_gaps)
+
+colnames(data)
+
+############################
+
+
+###  Ranked by Length    ### 
+
+
+############################
+
+
+selected_columns <- data[, c(1, 2,4,6,7,8, 11, 12, 13, 14,18, 19)]
+
+# Ensure Hit.Length is numeric
+selected_columns$Hit.Length <- as.numeric(selected_columns$Hit.Length)
+
+# Arrange columns
+ranked_len <- selected_columns %>%
+  arrange(Hit.Length)
+
+# View the ranked dataset
+print(ranked_len)
+
+# If you want to write the ranked dataset to a new CSV file
+write.csv(ranked_len, "/Users/iamse/Documents/Outputs/ranked_len.csv", row.names = FALSE)
+
+View(ranked_len)
+
+# Get 1 Example of top proteins only
+top_len <- ranked_len %>%
+  group_by(`Protein.Names`) %>%
+  slice(1) %>%
+  ungroup() %>%
+  arrange(Hit.Length)
+
+print(top_len)
+View(top_len)
+
+
+
+# Calculate the mean length for each Protein.Names
+selected_columns <- data[, c("Protein.Names", "Hit.Length")]
+
+# Confirm Column Names
+colnames(selected_columns) <- c("Protein.Names", "Hit.Length")
+
+# Calculate the mean 
+mean_len <- selected_columns %>%
+  group_by(Protein.Names) %>%
+  summarise(mean_len = mean(Hit.Length, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(mean_len)
+
+# View the resulting table
+print(mean_len)
+View(mean_len)
+
+
+
+
+
+
+
+
+# Hits <50
+
+# Filter the data frame to include hits with length <50
+fifty_len <- subset(data, Hit.Length < 50)
+
+# Write the filtered data frame to a CSV file
+write.csv(fifty_len, file = "fifty_len", row.names = FALSE)
+
+View(fifty_len)
+
+
+
+
+
+
+
+
+
+# Calculate the mean Positives for each Protein.Names
+selected_columns <- data[, c("Protein.Names", "Positives")]
+
+# Confirm Column Names
+colnames(selected_columns) <- c("Protein.Names", "Positives")
+
+# Calculate the mean 
+mean_positives <- selected_columns %>%
+  group_by(Protein.Names) %>%
+  summarise(mean_positives = mean(Positives, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(mean_positives))
+
+# View the resulting table
+print(mean_positives)
+View(mean_positives)
+
+############################
+
+
+###  Ranked by Expected  ### 
+
+
+############################
+
+# Select desired columns
+
+selected_columns <- data[, c(1, 2,4,6,7,8, 11, 12, 13, 14,18, 19)]
+
+# Arrange columns by Hsp.E.value (ascending)
+ranked_eval <- selected_columns %>%
+  arrange(Hsp.E.value)
+
+# View the ranked dataset
+print(ranked_eval)
+
+# If you want to write the ranked dataset to a new CSV file
+write.csv(ranked_eval, "/Users/iamse/Documents/Outputs/ranked_eval.csv", row.names = FALSE)
+
+# Get 1 Example of top proteins only
+top_eval <- ranked_eval %>%
+  group_by(`Protein.Names`) %>%
+  slice_min(order_by = Hsp.E.value, n = 1) %>%
+  ungroup() %>%
+  arrange(Hsp.E.value)
+
+# View the top proteins
+print(top_eval)
+
+
+print(top_eval)
+View(top_eval)
+
+selected_columns <- data[, c("Protein.Names", "Hsp.E.value")]
+
+# Confirm Column Names
+colnames(selected_columns) <- c("Protein.Names", "Hsp.E.value")
+
+# Calculate the mean 
+mean_eval <- selected_columns %>%
+  group_by(Protein.Names) %>%
+  summarise(mean_eval = mean(Hsp.E.value, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(mean_eval))
+
+# View the resulting table
+print(mean_eval)
+View(mean_eval)
+
+
+
+
+
+colnames(data)
+
+############################
+
+
+###  Ranked by Bit Score ### 
+
+
+############################
+
+selected_columns <- data[, c(1, 2, 4, 5, 6, 7, 8, 10)]
+# Arrange columns
+ranked_bit <- selected_columns %>%
+  arrange(desc(Hsp.Bit.Score))
+
+# View the ranked dataset
+print(ranked_bit)
+
+View(ranked_bit)
+
+# Get 1 Example of top proteins only
+top_bit <- ranked_bit %>%
+  group_by(`Protein.Names`) %>%
+  slice(1) %>%
+  ungroup() %>%
+  arrange(desc(Hsp.Bit.Score))
+
+print(top_bit)
+View(top_bit)
+
+
+# Calculate the mean bit score for each Protein 
+
+result <- selected_columns %>%
+  group_by(Protein.Names) %>%
+  summarise(mean_bit = {
+    # Calculate mean, capturing any warnings
+    result <- tryCatch(
+      mean(as.numeric(Hsp.Bit.Score), na.rm = TRUE),
+      warning = function(w) {
+        message("Warning:", w$message)
+        return(NA_real_)
+      }
+    )
+    return(result)
+  }) %>%
+  ungroup() %>%
+  arrange(desc(mean_bit))
+
+
+# If needed, write the result to a CSV file
+write.csv(mean_bit, "/Users/iamse/Documents/Outputs/mean_bit_scores.csv", row.names = FALSE)
+
+# View the result
+View(mean_bit)
+
+
+
+
+
+
+colnames(data)
+
+############################
+
+
+###  Ranked by  Score   ### 
+
+
+############################
+
+selected_columns <- data[, c(1, 2, 4, 5, 6, 7, 8, 11)]
+
+# Arrange columns
+ranked_score <- selected_columns %>%
+  arrange(desc(Hsp.Score))
+
+# View the ranked dataset
+print(ranked_score)
+
+View(ranked_score)
+
+# Get 1 Example of top proteins only
+top_score <- ranked_score %>%
+  group_by(`Protein.Names`) %>%
+  slice(1) %>%
+  ungroup() %>%
+  arrange(desc(Hsp.Score))
+
+print(top_score)
+View(top_score)
+
+
+# Calculate the mean bit score for each Protein 
+selected_columns <- data[, c("Protein.Names", "Hsp.Bit.Score")]
+
+# Confirm Column Names
+colnames(selected_columns) <- c("Protein.Names", "Hsp.Bit.Score")
+
+# Calculate the mean 
+mean_bit <- selected_columns %>%
+  group_by(Protein.Names) %>%
+  summarise(mean_bit = mean(Hsp.Bit.Score, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(desc(mean_bit))
+
+# View the resulting table
+print(mean_bit)
+View(mean_bit)
+
+
+
+
+
+############################
+
+
+### Viral Candidate List ### 
+
+
+############################
+library(dplyr)
+library(ggplot2)
+
+# List viral candidate proteins
+viral_candidates <- c("Neuregulins", "Gelsolin", "Visfatin", "Collagen", 
+                      "Bradykinin", "MX1", "MX2", "Nuclear factor kappa B (NF-?B)", 
+                      "Cyclin-dependent kinase 3", "Cyclins and cyclin-dependent kinase 2")
+
+# Only the viral candidate proteins
+filtered_data <- data %>%
+  filter(Protein.Names %in% viral_candidates)
+
+# Calculate mean lengtha for the viral candidate proteins
+vc_mean_lengths <- filtered_data %>%
+  group_by(Protein.Names) %>%
+  summarise(vc_mean_len = mean(Hit.Length, na.rm = TRUE))
+
+# Save the ranked table to a CSV file
+write.csv(vc_mean_lengths, "ranked_mean_lengths.csv", row.names = FALSE)
+
+# Print the ranked table
+print(vc_mean_lengths)
+
+View(vc_mean_lengths)
+
+
+
+
+
+###################################
+
+###      Filtered Results       ###
+
+###################################
+
+library(dplyr)
+
+# Convert columns to numeric
+data <- data %>%
+  mutate(Hit.Length = as.numeric(Hit.Length),
+         Gaps = as.numeric(Gaps),
+         Hsp.E.value = as.numeric(Hsp.E.value))
+
+# Filter the data based on the criteria
+filtered_table <- data %>%
+  filter(Hit.Length < 120, Gaps < 50, Hsp.E.value < 1.0e-3)
+
+
+
+
+# View the filtered table
+print(filtered_table)
+
+# If you want to write the filtered table to a new CSV file
+write.csv(filtered_table, "/Users/iamse/Documents/Outputs/filtered_table.csv", row.names = FALSE)
+
+View(filtered_table)
+
+
+
+
+#Rank filtered data by length
+ranked_len_filtered_table <- filtered_table %>%
+  arrange(Hit.Length)
+print(ranked_len_filtered_table)
+View(ranked_len_filtered_table)
+
+
+
+#Rank filtered data by expected
+
+ranked_eval_filtered_table <- filtered_table %>%
+  arrange(Hsp.E.value)
+print(ranked_eval_filtered_table)
+View(ranked_eval_filtered_table)
+
+
+
+
+###################################
+
+###      Species Analysis       ###
+
+###################################
+
+
+data <- subset(data, select = -c(Protein.Names.1))
+
+col_names <- colnames(data)
+print(col_names)
+
+install.packages("taxonomizr")
+library(taxonomizr)
+# Load the taxonomizr package
+library(taxonomizr)
+
+# Replace "Sequence_ID" with the actual column name containing your sequence identifiers
+data$Taxonomy <- classify_taxonomy(data$Accession.ID)
+
+# View the updated data with taxonomic classifications
+head(data)
+
+
+
+
+###################################
+
+###      Protein Analysis       ###
+
+###################################
+
+
+library(ggplot2)
+library(dplyr)
+
+
+
+# Count the occurrences of each Protein.Names
+protein_counts <- data %>%
+  count(Protein.Names) %>%
+  arrange(desc(n)) %>%
+  head(15)
+
+
+
+# Define the custom color palette with 15 unique colors
+custom_colors <- c("#1E4E50", "#2A7D7F", "#4F9A9A", "#5FAFAF", "#23A6AD", "#3AA7A9", "#55C3C3", "#7EB7B7", "#6E8484", "#7B7B7B", "#969696",
+                    "#A6A6A6", "#BCC9C9", "#C2C2C2", "#D3D3D3")
+# Create a bar chart
+p <- ggplot(protein_counts, aes(x = reorder(Protein.Names, n), y = n, fill = factor(Protein.Names, levels = protein_counts$Protein.Names))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = custom_colors) + # Use the custom color palette
+  labs(title = "Figure 3B Top 15 Proteins for Viral Mimicry",
+       x = "Protein Names",
+       y = "Hit Counts",  # Rename the y-axis label
+       fill = "Proteins Names") +  # Rename the legend
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Add count labels on top of each bar
+p + geom_text(aes(label = n), vjust = -0.5, size = 2.5, color = "black", fontface = "plain")
+
+
+
+
+
+unique_accession_count <- length(unique(data$Accession.ID))
+
+# Print the number of unique Accession IDs
+print(unique_accession_count)
+
+
+
+########## complete for all viral proteins #############
+
+
+library(ggplot2)
+library(dplyr)
+
+# Assuming 'data' is already defined and contains the actual data
+protein_counts <- data %>%
+  count(Protein.Names) %>%
+  arrange(desc(n))
+
+# Clean up protein names
+protein_counts$Protein.Names[protein_counts$Protein.Names == "Nuclear factor kappa B (NF-?B)"] <- "Nuclear factor kappa B"
+protein_counts$Protein.Names[protein_counts$Protein.Names == "Angiotensin or Angiotensinogen"] <- "Angiotensin/Angiotensinogen"
+protein_counts$Protein.Names[protein_counts$Protein.Names == "Calcineurin B homologous protein 3 (CHP3)"] <- "CHP3"
+protein_counts$Protein.Names[protein_counts$Protein.Names == "Catestatin or Chromogranin-A"] <- "Catestatin/Chromogranin A"
+
+# Specify proteins to highlight with asterisks
+specific_proteins <- c("Bradykinin", "Growth differentiation factor 11 (GDF11)", "Retinoic acid-inducible gene I (RIG-I)",
+                       "PMP34 ", "IFIT3", "Hemopressin", "MX1", "Bombesin", "Gelsolin", "Caspase-7",
+                       "Caspase-3", "Zinc-finger antiviral protein (ZAP)", "STAT4", "Angiotensin or Angiotensinogen",
+                       "PTEN (Phosphatase AND tensin homolog)", "BRCA1")
+
+# Add asterisks to specified proteins in the data frame
+protein_counts$Protein.Names <- ifelse(protein_counts$Protein.Names %in% specific_proteins,
+                                       paste0(protein_counts$Protein.Names, "*"),
+                                       protein_counts$Protein.Names)
+
+# Reorder the levels of Protein.Names to match the plot order
+protein_counts <- protein_counts %>%
+  mutate(Protein.Names = factor(Protein.Names, levels = unique(Protein.Names)))
+
+# Create custom colors
+custom_colors <- colorRampPalette(c("#1E4E50", "#2A7D7F", "#4F9A9A", "#5FAFAF", "#23A6AD", "#3AA7A9", "#55C3C3", "#7EB7B7", "#6E8484", "#7B7B7B", "#969696", "#A6A6A6", "#BCC9C9", "#C2C2C2", "#D3D3D3"))(nrow(protein_counts))
+
+# Create the plot
+p <- ggplot(protein_counts, aes(x = reorder(Protein.Names, n), y = n, fill = Protein.Names)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = custom_colors) +
+  labs(title = "Figure 3A: Top Proteins for Viral Mimicry",
+       x = "Protein Names",
+       y = "Hit Counts",
+       fill = "Protein Names") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 6),
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 10)) +
+  guides(fill = guide_legend(ncol = 2)) +
+  geom_text(aes(label = n), vjust = -0.5, size = 3, color = "black", fontface = "plain") + 
+  
+  # Add asterisks
+  geom_text(data = subset(protein_counts, grepl("\\*$", Protein.Names)),
+            aes(x = reorder(Protein.Names, n), y = n + 10, label = "*"), 
+            size = 4, color = "purple", vjust = -0.5)
+
+# Print the plot
+print(p)
+
+#######################################################
+
+
+#######              Protein Type                ######
+
+
+#######################################################
+
+# Sort 'data' by 'Identity' in descending order and select top 100 rows
+iden_1000 <- head(data[order(-data$Identity), ], 100)
+
+# Print the first few rows of iden_100 to verify
+head(iden_1000)
+
+
+
+
+identity_above_25 <- data %>%
+  filter(Identity >= 25) %>%
+  nrow()
+
+# Print the count
+print(identity_above_25)
+
+
+
+
+library(ggplot2)
+library(dplyr)
+
+
+
+# Calculate percentage distribution for Identity >= 30
+protein_type_counts <- data %>%
+  filter(Identity >= 30) %>%
+  group_by(Protein.Type) %>%
+  summarise(n = n()) %>%
+  mutate(percentage = n / sum(n) * 100)
+
+# Define custom colors
+custom_colors <- c("#1E4E50", "#FFF8D1", "#4B4B4B", "#D5A3FF", "#55C3C3", "#A6A6A6")
+
+# Create the pie chart
+p <- ggplot(protein_type_counts, aes(x = "", y = percentage, fill = Protein.Type)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  scale_fill_manual(values = custom_colors) +
+  labs(title = "Figure 2B: Distribution of Homologues with ≥ 30% Homology By Protein Types", 
+       fill = "Protein Types",
+       x = NULL, y = NULL) +  
+  theme_void() +  
+  geom_text(aes(label = paste0(round(percentage), "%")), 
+            position = position_stack(vjust = 0.5), 
+            size = 4, color = "black", fontface = "bold") + 
+  theme(
+    plot.title = element_text(size = 20, face = "bold"), 
+    legend.title = element_text(size = 14),               
+    legend.text = element_text(size = 12)                 
+  )
+
+# Print the pie chart
+print(p)
+
+
+
+library(ggplot2)
+library(dplyr)
+
+# Calculate percentage distribution
+protein_type_counts <- data %>%
+  group_by(Protein.Type) %>%
+  summarise(n = n()) %>%
+  mutate(percentage = n / sum(n) * 100)
+
+# Define custom colors
+custom_colors <- c("#1E4E50", "#A333FF", "#4F9A9A", "#FFF8D1", "#36DE52", "#F54141", 
+                   "#55C3C3", "#DEAE00", "#ECB6B6", "#4B4B4B", "#D5A3FF", "#A6A6A6")
+
+# Create the pie chart
+p <- ggplot(protein_type_counts, aes(x = "", y = percentage, fill = Protein.Type)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +  # Convert to polar coordinates for pie chart
+  scale_fill_manual(values = custom_colors) +
+  labs(title = "Figure 2B: Distribution of Homologues with ≥ 30% Homology By Protein Types", 
+       fill = "Protein Types",
+       x = NULL, y = NULL) +  # Removing axis labels for pie chart aesthetics
+  theme_void() +  # Remove all unnecessary elements
+  geom_text(aes(label = paste0(round(percentage), "%")), 
+            position = position_stack(vjust = 0.5), 
+            size = 4, color = "black", fontface = "bold") +  # Add percentage labels
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),  # Make the title larger
+    legend.title = element_text(size = 14),               # Make the legend title larger
+    legend.text = element_text(size = 12)                 # Make the legend text larger
+  )
+
+# Print the pie chart
+print(p)
+
+
+
+library(dplyr)
+
+
+protein_type_counts <- data %>%
+  filter(Identity >= 30) %>%
+  group_by(Protein.Type) %>%
+  summarise(n = n()) %>%
+  mutate(percentage = n / sum(n) * 100)
+
+# Filter the original data for "Metabolic Proteins"
+metabolic_proteins <- data %>%
+  filter(Protein.Type == "Metabolic Hormones")
+
+# Calculate the percentage distribution of "Protein.Name" within "Metabolic Proteins"
+protein_name_counts <- metabolic_proteins %>%
+  group_by(Protein.Names) %>%
+  summarise(n = n()) %>%
+  mutate(percentage = n / sum(n) * 100)
+
+# Print the result
+print(protein_name_counts)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Create filtered Pie chart
+
+p <- ggplot(protein_type_counts, aes(x = "", y = percentage, fill = Protein.Type)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +  # Convert to polar coordinates for pie chart
+  scale_fill_manual(values = custom_colors) +
+  labs(title = "Figure 3A Top Proteins for Viral Mimicry",
+       fill = "Protein Types",
+       x = NULL, y = NULL) +  # Removing axis labels for pie chart aesthetics
+  theme_void() +  # Remove all unnecessary elements
+  geom_text(data = subset(protein_type_counts, Protein.Type %in% c("Metabolic Hormones", "Structural")),
+            aes(label = paste0(round(percentage), "%")), 
+            position = position_stack(vjust = 0.5), 
+            size = 4, color = "black", fontface = "bold")  
+
+# Print the pie chart
+print(p)
+
+
+
+
+
+
+
+neuregulin_count <- protein_type_counts %>%
+  filter(Protein.Type == "Neuregulin (ERBB4)")
+
+# Extract the percentage value (assuming there is only one row for Neuregulin (ERBB4))
+percentage_neuregulin <- neuregulin_count$percentage
+
+# Print the percentage contribution
+print(paste("Percentage contribution of Neuregulin (ERBB4):", percentage_neuregulin, "%"))
+
+
+#######################################################
+
+##Mag vs Non-Mag
+mag_counts <- data %>%
+  group_by(Protein.Names) %>%
+  summarize(Mags_Yes_Count = sum(Mags == "Yes", na.rm = TRUE),
+            Total_Count = n())
+
+
+mag_counts <- mag_counts %>%
+  mutate(Percentage_Mags_Yes = (Mags_Yes_Count / Total_Count) * 100)
+
+mag_counts <- mag_counts %>%
+  arrange(desc(Percentage_Mags_Yes))
+
+print(mag_counts, n = Inf)
+
+
+## count rows
+row_count <- nrow(data)
+print(row_count)
+
+
+
+# Print all unique Accession IDs
+unique_accession_ids <- unique(data$Accession.ID)
+print(unique_accession_ids)
+
+# If you also want to see the count of unique Accession IDs
+cat("Total unique Accession IDs:", length(unique_accession_ids), "\n")
+
+
+
+
+protein_type_counts <- top_identities %>%
+  count(Protein.Type, name = "Count") %>%
+  arrange(desc(Count)) %>%
+  mutate(Rank = row_number())
+
+# Print the ranked table
+print(protein_type_counts)
+
+
+
+library(dplyr)
+
+# Create a new dataset that includes only rows with Protein.Name "Leukocyte surface antigen CD47"
+cd47_data <- data %>%
+  filter(Protein.Names == "Leukocyte surface antigen CD47")
+
+# View the new dataset to confirm
+View(cd47_data)
+nrow(cd47_data)
