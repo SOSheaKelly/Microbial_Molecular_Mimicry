@@ -1,0 +1,120 @@
+Protein Type	Protein Names	Accession ID	Previously identified Homologs
+Hypothalamic-Pituitary Axis Hormones	Follitropin subunit beta	P01225	N
+Hypothalamic-Pituitary Axis Hormones	Somatotropin Growth hormone	P01241	N
+Hypothalamic-Pituitary Axis Hormones	Peptide YY (PYY)	P10082	N
+Gastrointestinal 	Promotilin Cleaved into Motilin (Motilin-associated peptide MAP)	P12872	N
+Gastrointestinal 	Vasoactive intestinal peptide (VIP)	P01282	N
+Gastrointestinal 	Pituitary adenylate cyclase-activating peptide (PACAP)	P18509	Y
+Gastrointestinal 	Bradykinin	P46663	N
+Gastrointestinal 	Atrial natriuretic peptide (ANP) or Natriuretic peptides A	P01160	Y
+Gastrointestinal 	Brain natriuretic peptide (BNP) or Natriuretic peptides B	P16860	N
+Gastrointestinal 	Calcitonin	P01258	N
+Gastrointestinal 	Calcitonin gene-related peptide (CGRP)	P06881	N
+Gastrointestinal 	Bombesin	P32247	N
+Neuropeptides and Neurotransmitter	Proenkephalin-A	P01210	N
+Neuropeptides and Neurotransmitter	Proenkephalin-B	P01213	N
+Neuropeptides and Neurotransmitter	Neuropeptide S (NPS)	P0C0P6	N
+Neuropeptides and Neurotransmitter	Neurotensin	P30990	N
+Neuropeptides and Neurotransmitter	Tachykinin (Substance P)	P20366	N
+Neuropeptides and Neurotransmitter	Neuropeptide W (NPW)	Q8N729	Y
+Neuropeptides and Neurotransmitter	Prokineticin-1	Q8NFJ6	Y
+Neuropeptides and Neurotransmitter	Prokineticin-2	Q9HC23	Y
+Neuropeptides and Neurotransmitter	Neuropeptide FF (NPFF)	O15130	N
+Neuropeptides and Neurotransmitter	Neuropeptide Y (NPY)	P01303	Y
+Neuropeptides and Neurotransmitter	Neuromedin U (NMU)	P48645	Y
+Neuropeptides and Neurotransmitter	Nociceptin (Orphanin FQ)	Q13519	Y
+Neuropeptides and Neurotransmitter	Neuromedin B (NMB)	P08949	Y
+Neuropeptides and Neurotransmitter	Neuropeptide B (NPB)	Q8NG41	Y
+Neuropeptides and Neurotransmitter	Neuromedin S	Q5H8A3	Y
+Neuropeptides and Neurotransmitter	Catestatin or Chromogranin-A	P10645	Y
+Neuropeptides and Neurotransmitter	Urocortin II (stresscopin-related peptide)	Q96RP3	Y
+Neuropeptides and Neurotransmitter	Urocortin III	Q969E3	Y
+Neuropeptides and Neurotransmitter	Urotensin I	P55089	Y
+Neuropeptides and Neurotransmitter	Urotensin II	O95399	Y
+Neuropeptides and Neurotransmitter	Kisspeptin or Metastasis-suppressor KiSS-1	Q15726	Y
+Neuropeptides and Neurotransmitter	Serotonin (5-HT)	P47898	Y
+Neuropeptides and Neurotransmitter	Dermcidin	P81605	Y
+Neuropeptides and Neurotransmitter	Neurokinin A	Q9UHF0	N
+Neuropeptides and Neurotransmitter	Interleukin-33	O95760	Y
+Neuropeptides and Neurotransmitter	Interleukin-25	Q9H293	N
+Cardiovascular and Renal Hormones	Pro-adrenomedullin	P35318	N
+Cardiovascular and Renal Hormones	Angiotensin or Angiotensinogen	P01019	N
+Cardiovascular and Renal Hormones	Calcineurin B homologous protein 1 (CHP1)	Q99653	N
+Cardiovascular and Renal Hormones	Calcineurin B homologous protein 2 (CHP2)	O43745	N
+Cardiovascular and Renal Hormones	Calcineurin B homologous protein 3 (CHP3)	Q96BS2	N
+Cardiovascular and Renal Hormones	C-type natriuretic peptide (CNP)	P23582	Y
+Cardiovascular and Renal Hormones	Vasoactive inhibitory peptide (VIP)	P07492	Y
+Metabolic Hormones	Insulin-like growth factor II (IGF2)	P01344	Y
+Metabolic Hormones	Visfatin	P43490	Y
+Metabolic Hormones	Nesfatin-1	A0A097EV82	Y
+Metabolic Hormones	Nesfatin-2	P80303	Y
+Metabolic Hormones	Hemopressin	P01966	N
+Metabolic Hormones	Follistatin	P19883	Y
+Metabolic Hormones	Growth differentiation factor 11 (GDF11)	O95390	N
+Metabolic Hormones	Neuregulin (ERBB4)	Q15303	Y
+Growth Factors/ Developmental Proteins	Growth differentiation factor 15 (GDF-15)	Q99988	N
+Growth Factors/ Developmental Proteins	Insulin-like peptide 5 (INSL5)	Q9Y5Q6	N
+Tumour Suppressors and DNA Repair Proteins	p53	P04637	Y
+Tumour Suppressors and DNA Repair Proteins	Retinoblastoma protein (pRb)	P06400	Y
+Tumour Suppressors and DNA Repair Proteins	PTEN (Phosphatase AND tensin homolog)	P60484	N
+Tumour Suppressors and DNA Repair Proteins	BRCA1	P38398	N
+Tumour Suppressors and DNA Repair Proteins	BRCA2	P51587	Y
+Structural 	Collagen 	Q02388	Y
+Structural 	Gelsolin	P06396	N
+Structural 	Myosin 	Q12965	Y
+Structural 	Keratin 	P02533	Y
+Structural 	Tubulin 	Q9BTW9	N
+Structural 	Elastin	P15502	N
+Structural 	Lamin	Q03252	N
+Structural 	PMP34 	O43808	N
+Structural 	PEX16	Q9Y5Y5	Y
+Structural 	PEX13	Q92968	Y
+Structural 	PEX14	O75381	Y
+Structural 	PMP 11A	O75192	Y
+Structural 	PMP 11B	O96011	Y
+Structural 	PMP 2	Q01453	Y
+Structural 	Integrin alpha-1	P56199	N
+Structural 	Fibrin	P23142	N
+Antiviral Proteins	MX1	P20591	N
+Antiviral Proteins	MX2	P20592	N
+Antiviral Proteins	IFIT1	P09914	N
+Antiviral Proteins	IFITM1	P13164	N
+Antiviral Proteins	IFIT5	Q13325	N
+Antiviral Proteins	IFIT3	O14879	N
+Antiviral Proteins	IFITM2	Q01629	N
+Antiviral Proteins	IFI6	P09912	N
+Antiviral Proteins	IFITM3	Q01628	N
+Antiviral Proteins	Retinoic acid-inducible gene I (RIG-I)	O95786	N
+Antiviral Proteins	Protein kinase R (PKR)	P19525	Y
+Antiviral Proteins	Apolipoprotein B mRNA-editing enzyme catalytic polypeptide-like 3 (APOBEC3) 	Q8IUX4	N
+Antiviral Proteins	Zinc-finger antiviral protein (ZAP)	Q7Z2W4	N
+Antiviral Proteins	SAM domain and HD domain-containing protein 1 (SAMHD1)	Q9Y3Z3	Y
+Antiviral Proteins	Tetherin (BST2) 	Q10589	Y
+Transcription Factors	STAT1	P42224	N
+Transcription Factors	STAT2	P52630	N
+Transcription Factors	STAT3	P40763	N
+Transcription Factors	STAT4	Q14765	N
+Transcription Factors	STAT5	O00910	N
+Transcription Factors	STAT6	P42226	N
+Transcription Factors	Nuclear factor kappa B (NF-?B)	P19838	Y
+Cell Cycle Regulation Proteins	Cyclin-dependent kinase 1	P06493	Y
+Cell Cycle Regulation Proteins	Cyclins and cyclin-dependent kinase 2	P24941	Y
+Cell Cycle Regulation Proteins	Cyclin-dependent kinase 3	Q00526	Y
+Cell Cycle Regulation Proteins	Cyclin-dependent kinase 4	P11802	Y
+Cell Cycle Regulation Proteins	Cyclin-dependent kinase 5	Q00535	Y
+Cell Cycle Regulation Proteins	Cyclins and cyclin-dependent kinase 6	Q00534	Y
+Cell Death and Survival Related	Apoptosis regulator BAX	Q07812	Y
+Cell Death and Survival Related	Bcl-2 homologous antagonist/killer	Q16611	Y
+Cell Death and Survival Related	Tumor necrosis factor receptor superfamily member 6	P25445	Y
+Cell Death and Survival Related	Caspase-8	Q14790	Y
+Cell Death and Survival Related	Caspase-9	P55211	N
+Cell Death and Survival Related	Caspase-3	P42574	N
+Cell Death and Survival Related	Caspase-7	P55210	N
+Immune System - Cytokines	Interferon alpha-21	P01568	N
+Immune System - Cytokines	Interferon alpha-14	P01570	N
+Immune System - Cytokines	Interferon alpha-10	P01566	N
+Immune System - Cytokines	Interferon gamma	P01579	N
+Immune System - Cytokines	Interferon kappa	Q9P0W0	N
+Immune System - Cytokines	Interferon beta	P01574	N
+RNA Editing and RNA Regulation Proteins	ADAR (Adenosine deaminase acting on RNA)	P55265	Y
+Cell Surface Receptor	Leukocyte surface antigen CD47	Q08722	Y
